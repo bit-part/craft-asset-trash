@@ -1,0 +1,323 @@
+{% extends '_layouts/cp.twig' %}
+
+{% set title = 'Asset Trash'|t('asset-trash') %}
+{% set selectedSubnavItem = 'asset-trash' %}
+
+{% set fullPageForm = false %}
+
+{% block actionButton %}
+    {% if items|length and currentUser.can('assetTrash-emptyTrash') %}
+        <form method="post">
+            {{ csrfInput() }}
+            {{ actionInput('asset-trash/trash/empty-trash') }}
+            {{ redirectInput('asset-trash') }}
+            {% if volumeId %}
+                {{ hiddenInput('volumeId', volumeId) }}
+            {% endif %}
+            <button type="submit" class="btn submit" data-confirm="{{ 'Are you sure you want to permanently delete all items in the trash?'|t('asset-trash') }}">
+                {{ 'Empty Trash'|t('asset-trash') }}
+            </button>
+        </form>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {# Volume filter #}
+    {% if volumes|length > 1 %}
+        <div class="flex mb-4">
+            <div class="btn menubtn" data-icon="filter">
+                {% if volumeId %}
+                    {% for v in volumes %}
+                        {% if v.id == volumeId %}
+                            {{ v.name }}
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    {{ 'All Volumes'|t('asset-trash') }}
+                {% endif %}
+            </div>
+            <div class="menu">
+                <ul>
+                    <li>
+                        <a href="{{ cpUrl('asset-trash') }}"{% if not volumeId %} class="sel"{% endif %}>
+                            {{ 'All Volumes'|t('asset-trash') }}
+                        </a>
+                    </li>
+                    {% for v in volumes %}
+                        <li>
+                            <a href="{{ cpUrl('asset-trash', { volumeId: v.id }) }}"{% if volumeId == v.id %} class="sel"{% endif %}>
+                                {{ v.name }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if items|length %}
+        <form method="post" id="trash-form">
+            {{ csrfInput() }}
+            {{ redirectInput('asset-trash') }}
+
+            {# Bulk actions #}
+            <div class="flex mb-2" id="bulk-actions" style="display:none;">
+                {% if currentUser.can('assetTrash-restoreAssets') %}
+                    <button type="button" class="btn" id="bulk-restore-btn">
+                        {{ 'Restore Selected'|t('asset-trash') }}
+                    </button>
+                {% endif %}
+                {% if currentUser.can('assetTrash-permanentlyDelete') %}
+                    <button type="button" class="btn submit" id="bulk-delete-btn" data-confirm="{{ 'Are you sure you want to permanently delete the selected items?'|t('asset-trash') }}">
+                        {{ 'Delete Selected'|t('asset-trash') }}
+                    </button>
+                {% endif %}
+            </div>
+
+            <div class="tableview">
+                <table class="data fullwidth">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="checkbox-cell selectallcontainer">
+                                <div class="checkbox" role="checkbox" aria-checked="false" tabindex="0" title="{{ 'Select all'|t('app') }}"></div>
+                            </th>
+                            <th scope="col" class="thin"><span class="visually-hidden">{{ 'Preview'|t('asset-trash') }}</span></th>
+                            <th scope="col">{{ 'Filename'|t('asset-trash') }}</th>
+                            <th scope="col">{{ 'Original Location'|t('asset-trash') }}</th>
+                            <th scope="col">{{ 'Size'|t('asset-trash') }}</th>
+                            <th scope="col">{{ 'Deleted By'|t('asset-trash') }}</th>
+                            <th scope="col">{{ 'Date Deleted'|t('asset-trash') }}</th>
+                            <th scope="col">{{ 'References'|t('asset-trash') }}</th>
+                            <th scope="col" class="thin"><span class="visually-hidden">{{ 'Actions'|t('asset-trash') }}</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                            <tr>
+                                <td class="checkbox-cell">
+                                    <div class="checkbox" role="checkbox" aria-checked="false" tabindex="0" data-id="{{ item.id }}" aria-label="{{ item.filename }}"></div>
+                                </td>
+                                <td class="thin">
+                                    {% if item.kind == 'image' %}
+                                        <div class="element small hasthumb">
+                                            <span class="status"></span>
+                                            <div class="thumb" style="background-color: #f5f5f5;">
+                                                <span data-icon="photo"></span>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <span data-icon="file"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ cpUrl('asset-trash/detail', { id: item.id }) }}">
+                                        <strong>{{ item.filename }}</strong>
+                                    </a>
+                                </td>
+                                <td>
+                                    <code class="light">{{ item.folderPath ?: '/' }}</code>
+                                </td>
+                                <td>
+                                    {% if item.size %}
+                                        {{ item.size|filesize }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if item.deletedByUserId %}
+                                        {% set deletedUser = usersById[item.deletedByUserId] ?? null %}
+                                        {{ deletedUser ? deletedUser.friendlyName : '—' }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ item.dateDeleted|datetime('short') }}
+                                </td>
+                                <td>
+                                    {% set refCount = item.getReferenceCount() %}
+                                    {% if refCount > 0 %}
+                                        <span class="status red" title="{{ '{count} reference(s)'|t('asset-trash', { count: refCount }) }}"></span>
+                                        {{ refCount }}
+                                    {% else %}
+                                        0
+                                    {% endif %}
+                                </td>
+                                <td class="thin">
+                                    <div class="flex">
+                                        {% if currentUser.can('assetTrash-restoreAssets') %}
+                                            <form method="post" class="inline-form">
+                                                {{ csrfInput() }}
+                                                {{ actionInput('asset-trash/trash/restore') }}
+                                                {{ hiddenInput('id', item.id) }}
+                                                {{ redirectInput('asset-trash') }}
+                                                <button type="submit" class="btn small" title="{{ 'Restore'|t('asset-trash') }}">
+                                                    {{ 'Restore'|t('asset-trash') }}
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                        {% if currentUser.can('assetTrash-permanentlyDelete') %}
+                                            <form method="post" class="inline-form">
+                                                {{ csrfInput() }}
+                                                {{ actionInput('asset-trash/trash/permanent-delete') }}
+                                                {{ hiddenInput('id', item.id) }}
+                                                {{ redirectInput('asset-trash') }}
+                                                <button type="submit" class="btn small submit" title="{{ 'Delete'|t('asset-trash') }}" data-confirm="{{ 'Are you sure you want to permanently delete this item?'|t('asset-trash') }}">
+                                                    {{ 'Delete'|t('asset-trash') }}
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </form>
+
+        {# Pagination #}
+        {% if total > limit %}
+            {% set totalPages = ((total / limit)|round(0, 'ceil'))|number_format(0, '', '') %}
+            <nav class="flex flex-nowrap mt-4" aria-label="Pagination">
+                {% if page > 1 %}
+                    <a href="{{ cpUrl('asset-trash', { page: page - 1, volumeId: volumeId }) }}" class="btn" aria-label="{{ 'Previous'|t('app') }}">←</a>
+                {% endif %}
+                <span class="light" style="line-height: 38px; margin: 0 8px;">
+                    {{ 'Page {page} of {total}'|t('asset-trash', { page: page, total: totalPages }) }}
+                </span>
+                {% if page < totalPages %}
+                    <a href="{{ cpUrl('asset-trash', { page: page + 1, volumeId: volumeId }) }}" class="btn" aria-label="{{ 'Next'|t('app') }}">→</a>
+                {% endif %}
+            </nav>
+        {% endif %}
+    {% else %}
+        <p class="zilch">{{ 'The trash is empty.'|t('asset-trash') }}</p>
+    {% endif %}
+{% endblock %}
+
+{% js %}
+(function() {
+    // Checkbox handling for bulk actions
+    var checkboxes = document.querySelectorAll('#trash-form .checkbox[data-id]');
+    var selectAll = document.querySelector('#trash-form .selectallcontainer .checkbox');
+    var bulkActions = document.getElementById('bulk-actions');
+    var bulkRestoreBtn = document.getElementById('bulk-restore-btn');
+    var bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+    var form = document.getElementById('trash-form');
+
+    function getSelectedIds() {
+        var ids = [];
+        checkboxes.forEach(function(cb) {
+            if (cb.classList.contains('checked')) {
+                ids.push(cb.dataset.id);
+            }
+        });
+        return ids;
+    }
+
+    function updateBulkActions() {
+        var ids = getSelectedIds();
+        if (ids.length > 0) {
+            bulkActions.style.display = '';
+        } else {
+            bulkActions.style.display = 'none';
+        }
+    }
+
+    function toggleCheckbox(cb) {
+        var isChecked = cb.classList.toggle('checked');
+        cb.setAttribute('aria-checked', isChecked ? 'true' : 'false');
+        updateBulkActions();
+    }
+
+    checkboxes.forEach(function(cb) {
+        cb.addEventListener('click', function() {
+            toggleCheckbox(this);
+        });
+        cb.addEventListener('keydown', function(e) {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                toggleCheckbox(this);
+            }
+        });
+    });
+
+    if (selectAll) {
+        selectAll.addEventListener('click', function() {
+            var checked = !this.classList.contains('checked');
+            this.classList.toggle('checked');
+            this.setAttribute('aria-checked', checked ? 'true' : 'false');
+            checkboxes.forEach(function(cb) {
+                if (checked) {
+                    cb.classList.add('checked');
+                } else {
+                    cb.classList.remove('checked');
+                }
+                cb.setAttribute('aria-checked', checked ? 'true' : 'false');
+            });
+            updateBulkActions();
+        });
+        selectAll.addEventListener('keydown', function(e) {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                this.click();
+            }
+        });
+    }
+
+    // Bulk action submission
+    function submitBulkAction(actionUrl) {
+        var ids = getSelectedIds();
+        if (ids.length === 0) return;
+
+        // Remove old hidden inputs
+        form.querySelectorAll('input[name="ids[]"]').forEach(function(el) { el.remove(); });
+
+        ids.forEach(function(id) {
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'ids[]';
+            input.value = id;
+            form.appendChild(input);
+        });
+
+        var actionInput = form.querySelector('input[name="action"]');
+        if (!actionInput) {
+            actionInput = document.createElement('input');
+            actionInput.type = 'hidden';
+            actionInput.name = 'action';
+            form.appendChild(actionInput);
+        }
+        actionInput.value = actionUrl;
+        form.submit();
+    }
+
+    if (bulkRestoreBtn) {
+        bulkRestoreBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            submitBulkAction('asset-trash/trash/bulk-restore');
+        });
+    }
+
+    if (bulkDeleteBtn) {
+        bulkDeleteBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm(this.dataset.confirm)) {
+                submitBulkAction('asset-trash/trash/bulk-delete');
+            }
+        });
+    }
+
+    // Confirm buttons
+    document.querySelectorAll('[data-confirm]').forEach(function(btn) {
+        if (btn.id === 'bulk-delete-btn') return; // handled above
+        btn.addEventListener('click', function(e) {
+            if (!confirm(this.dataset.confirm)) {
+                e.preventDefault();
+            }
+        });
+    });
+})();
+{% endjs %}

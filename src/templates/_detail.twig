@@ -1,0 +1,139 @@
+{% extends '_layouts/cp.twig' %}
+
+{% set title = item.filename %}
+{% set selectedSubnavItem = 'asset-trash' %}
+
+{% block content %}
+    <div class="meta">
+        <div class="data">
+            <h5 class="heading">{{ 'Filename'|t('asset-trash') }}</h5>
+            <div class="value"><code>{{ item.filename }}</code></div>
+        </div>
+
+        <div class="data">
+            <h5 class="heading">{{ 'Kind'|t('asset-trash') }}</h5>
+            <div class="value">{{ item.kind }}</div>
+        </div>
+
+        <div class="data">
+            <h5 class="heading">{{ 'Size'|t('asset-trash') }}</h5>
+            <div class="value">{{ item.size ? item.size|filesize : '—' }}</div>
+        </div>
+
+        <div class="data">
+            <h5 class="heading">{{ 'Volume'|t('asset-trash') }}</h5>
+            <div class="value">{{ volumeName }}</div>
+        </div>
+
+        <div class="data">
+            <h5 class="heading">{{ 'Original Path'|t('asset-trash') }}</h5>
+            <div class="value"><code>{{ item.folderPath ?: '/' }}{{ item.filename }}</code></div>
+        </div>
+
+        {% if item.title %}
+            <div class="data">
+                <h5 class="heading">{{ 'Title'|t('asset-trash') }}</h5>
+                <div class="value">{{ item.title }}</div>
+            </div>
+        {% endif %}
+
+        {% if item.alt %}
+            <div class="data">
+                <h5 class="heading">{{ 'Alt Text'|t('asset-trash') }}</h5>
+                <div class="value">{{ item.alt }}</div>
+            </div>
+        {% endif %}
+
+        <div class="data">
+            <h5 class="heading">{{ 'Deleted By'|t('asset-trash') }}</h5>
+            <div class="value">
+                {% if deletedByUser %}
+                    {{ deletedByUser.friendlyName }}
+                {% else %}
+                    —
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="data">
+            <h5 class="heading">{{ 'Date Deleted'|t('asset-trash') }}</h5>
+            <div class="value">{{ item.dateDeleted|datetime }}</div>
+        </div>
+
+        <div class="data">
+            <h5 class="heading">{{ 'Original Asset ID'|t('asset-trash') }}</h5>
+            <div class="value">{{ item.assetId ?? '—' }}</div>
+        </div>
+
+        <div class="data">
+            <h5 class="heading">{{ 'Trash Path'|t('asset-trash') }}</h5>
+            <div class="value"><code>{{ item.trashPath }}</code></div>
+        </div>
+
+        {# References #}
+        {% set references = item.getReferences() %}
+        {% if references|length %}
+            <div class="data">
+                <h5 class="heading">{{ 'References at time of deletion'|t('asset-trash') }}</h5>
+                <div class="value">
+                    <table class="data fullwidth">
+                        <thead>
+                            <tr>
+                                <th>{{ 'Source Element ID'|t('asset-trash') }}</th>
+                                <th>{{ 'Source Type'|t('asset-trash') }}</th>
+                                <th>{{ 'Field ID'|t('asset-trash') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ref in references %}
+                                <tr>
+                                    <td>{{ ref.sourceId }}</td>
+                                    <td><code>{{ ref.sourceType }}</code></td>
+                                    <td>{{ ref.fieldId }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    {# Actions #}
+    <hr>
+    <div class="flex">
+        {% if currentUser.can('assetTrash-restoreAssets') %}
+            <form method="post">
+                {{ csrfInput() }}
+                {{ actionInput('asset-trash/trash/restore') }}
+                {{ hiddenInput('id', item.id) }}
+                {{ redirectInput('asset-trash') }}
+                <button type="submit" class="btn">
+                    {{ 'Restore'|t('asset-trash') }}
+                </button>
+            </form>
+        {% endif %}
+        {% if currentUser.can('assetTrash-permanentlyDelete') %}
+            <form method="post">
+                {{ csrfInput() }}
+                {{ actionInput('asset-trash/trash/permanent-delete') }}
+                {{ hiddenInput('id', item.id) }}
+                {{ redirectInput('asset-trash') }}
+                <button type="submit" class="btn submit" data-confirm="{{ 'Are you sure you want to permanently delete this item?'|t('asset-trash') }}">
+                    {{ 'Permanently Delete'|t('asset-trash') }}
+                </button>
+            </form>
+        {% endif %}
+        <a href="{{ cpUrl('asset-trash') }}" class="btn">{{ 'Back to Trash'|t('asset-trash') }}</a>
+    </div>
+{% endblock %}
+
+{% js %}
+document.querySelectorAll('[data-confirm]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+        if (!confirm(this.dataset.confirm)) {
+            e.preventDefault();
+        }
+    });
+});
+{% endjs %}

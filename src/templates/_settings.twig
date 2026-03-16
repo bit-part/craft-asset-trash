@@ -1,0 +1,31 @@
+{% import '_includes/forms.twig' as forms %}
+
+{{ forms.textField({
+    label: 'Retention Days'|t('asset-trash'),
+    instructions: 'Number of days to keep trashed items before auto-purge. Set to 0 for indefinite retention.'|t('asset-trash'),
+    id: 'retentionDays',
+    name: 'retentionDays',
+    value: settings.retentionDays,
+    type: 'number',
+    min: 0,
+    size: 5,
+    errors: settings.getErrors('retentionDays'),
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Auto Purge'|t('asset-trash'),
+    instructions: 'Automatically purge expired items during garbage collection.'|t('asset-trash'),
+    id: 'autoPurge',
+    name: 'autoPurge',
+    on: settings.autoPurge,
+    errors: settings.getErrors('autoPurge'),
+}) }}
+
+{{ forms.textField({
+    label: 'Trash Directory Name'|t('asset-trash'),
+    instructions: 'The directory name within each volume where trashed files are stored.'|t('asset-trash'),
+    id: 'trashDirName',
+    name: 'trashDirName',
+    value: settings.trashDirName,
+    errors: settings.getErrors('trashDirName'),
+}) }}

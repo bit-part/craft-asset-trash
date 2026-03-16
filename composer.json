@@ -1,0 +1,32 @@
+{
+    "name": "bitpart/craft-asset-trash",
+    "description": "A Craft CMS plugin that intercepts asset deletion and moves files to a trash directory for later restoration or permanent deletion.",
+    "type": "craft-plugin",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "craftcms/cms": "^5.0.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "bitpart\\assettrash\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "bitpart\\assettrash\\tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "handle": "asset-trash",
+        "name": "Asset Trash",
+        "developer": "bit part LLC",
+        "developerUrl": "https://and-and.com",
+        "documentationUrl": "https://github.com/bit-part/craft-asset-trash",
+        "class": "bitpart\\assettrash\\AssetTrash",
+        "schemaVersion": "1.0.0"
+    }
+}
