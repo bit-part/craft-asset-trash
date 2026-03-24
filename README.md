@@ -1,5 +1,7 @@
 # Asset Trash for Craft CMS 5
 
+English | **[日本語](README-ja.md)** | **[Deutsch](README-de.md)**
+
 A Craft CMS 5 plugin that provides a trash/recycle bin for deleted assets. When an asset is deleted, the file is copied to a `.trash/` directory within the volume, and a database record is kept so it can be restored or permanently deleted later from the control panel.
 
 ## Requirements
