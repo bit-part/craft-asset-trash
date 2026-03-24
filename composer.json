@@ -24,7 +24,7 @@
         "handle": "asset-trash",
         "name": "Asset Trash",
         "developer": "bit part LLC",
-        "developerUrl": "https://and-and.com",
+        "developerUrl": "https://bit-part.net",
         "documentationUrl": "https://github.com/bit-part/craft-asset-trash",
         "class": "bitpart\\assettrash\\AssetTrash",
         "schemaVersion": "1.0.0"
