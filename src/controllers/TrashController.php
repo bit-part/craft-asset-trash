@@ -78,9 +78,23 @@ class TrashController extends Controller
             throw new NotFoundHttpException(Craft::t('asset-trash', 'Trash item not found.'));
         }
 
-        // Resolve volume name
+        // Resolve volume name and base path
         $volume = Craft::$app->getVolumes()->getVolumeById($item->volumeId);
         $volumeName = $volume?->name ?? Craft::t('asset-trash', '(deleted volume)');
+        $volumeBasePath = '';
+        if ($volume) {
+            try {
+                $fs = $volume->getFs();
+                if ($fs instanceof \craft\fs\Local) {
+                    $resolvedPath = Craft::getAlias($fs->path);
+                    $webroot = Craft::getAlias('@webroot');
+                    if (str_starts_with($resolvedPath, $webroot)) {
+                        $volumeBasePath = trim(substr($resolvedPath, strlen($webroot)), '/');
+                    }
+                }
+            } catch (\Throwable $e) {
+            }
+        }
 
         // Resolve deleted-by user
         $deletedByUser = null;
@@ -91,6 +105,7 @@ class TrashController extends Controller
         return $this->renderTemplate('asset-trash/_detail', [
             'item' => $item,
             'volumeName' => $volumeName,
+            'volumeBasePath' => $volumeBasePath,
             'deletedByUser' => $deletedByUser,
         ]);
     }

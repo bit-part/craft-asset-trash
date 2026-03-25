@@ -27,7 +27,7 @@
 
         <div class="data">
             <h5 class="heading">{{ 'Original Path'|t('asset-trash') }}</h5>
-            <div class="value"><code>{{ item.folderPath ?: '/' }}{{ item.filename }}</code></div>
+            <div class="value"><code>{{ volumeBasePath ? volumeBasePath ~ '/' : '' }}{{ item.folderPath }}{{ item.filename }}</code></div>
         </div>
 
         {% if item.title %}
