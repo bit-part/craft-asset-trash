@@ -81,7 +81,6 @@
                             <th scope="col" class="checkbox-cell selectallcontainer">
                                 <div class="checkbox" role="checkbox" aria-checked="false" tabindex="0" title="{{ 'Select all'|t('app') }}"></div>
                             </th>
-                            <th scope="col" class="thin"><span class="visually-hidden">{{ 'Preview'|t('asset-trash') }}</span></th>
                             <th scope="col">{{ 'Filename'|t('asset-trash') }}</th>
                             <th scope="col">{{ 'Size'|t('asset-trash') }}</th>
                             <th scope="col">{{ 'Deleted By'|t('asset-trash') }}</th>
@@ -95,18 +94,6 @@
                             <tr>
                                 <td class="checkbox-cell">
                                     <div class="checkbox" role="checkbox" aria-checked="false" tabindex="0" data-id="{{ item.id }}" aria-label="{{ item.filename }}"></div>
-                                </td>
-                                <td class="thin">
-                                    {% if item.kind == 'image' %}
-                                        <div class="element small hasthumb">
-                                            <span class="status"></span>
-                                            <div class="thumb" style="background-color: #f5f5f5;">
-                                                <span data-icon="photo"></span>
-                                            </div>
-                                        </div>
-                                    {% else %}
-                                        <span data-icon="file"></span>
-                                    {% endif %}
                                 </td>
                                 <td>
                                     <a href="{{ cpUrl('asset-trash/detail', { id: item.id }) }}">
