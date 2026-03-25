@@ -61,7 +61,7 @@
             {{ redirectInput('asset-trash') }}
 
             {# Bulk actions #}
-            <div class="flex mb-2" id="bulk-actions" style="display:none;">
+            <div class="flex mb-4" id="bulk-actions" style="display:none;">
                 {% if currentUser.can('assetTrash-restoreAssets') %}
                     <button type="button" class="btn" id="bulk-restore-btn">
                         {{ 'Restore Selected'|t('asset-trash') }}
