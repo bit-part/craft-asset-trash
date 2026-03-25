@@ -24,7 +24,7 @@
 {% block content %}
     {# Volume filter #}
     {% if volumes|length > 1 %}
-        <div class="flex mb-8">
+        <div class="flex" style="margin-bottom: 24px;">
             <div class="btn menubtn" data-icon="filter">
                 {% if volumeId %}
                     {% for v in volumes %}
@@ -61,7 +61,7 @@
             {{ redirectInput('asset-trash') }}
 
             {# Bulk actions #}
-            <div class="flex mb-4" id="bulk-actions" style="display:none;">
+            <div class="flex" id="bulk-actions" style="display:none; margin-bottom: 16px;">
                 {% if currentUser.can('assetTrash-restoreAssets') %}
                     <button type="button" class="btn" id="bulk-restore-btn">
                         {{ 'Restore Selected'|t('asset-trash') }}
