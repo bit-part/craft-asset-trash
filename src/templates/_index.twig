@@ -83,7 +83,6 @@
                             </th>
                             <th scope="col" class="thin"><span class="visually-hidden">{{ 'Preview'|t('asset-trash') }}</span></th>
                             <th scope="col">{{ 'Filename'|t('asset-trash') }}</th>
-                            <th scope="col">{{ 'Original Location'|t('asset-trash') }}</th>
                             <th scope="col">{{ 'Size'|t('asset-trash') }}</th>
                             <th scope="col">{{ 'Deleted By'|t('asset-trash') }}</th>
                             <th scope="col">{{ 'Date Deleted'|t('asset-trash') }}</th>
@@ -113,9 +112,6 @@
                                     <a href="{{ cpUrl('asset-trash/detail', { id: item.id }) }}">
                                         <strong>{{ item.filename }}</strong>
                                     </a>
-                                </td>
-                                <td>
-                                    <code class="light">{{ item.folderPath ?: '/' }}</code>
                                 </td>
                                 <td>
                                     {% if item.size %}
