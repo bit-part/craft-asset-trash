@@ -1,4 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-  <path d="M3 6h18v2H3V6zm2 3h14l-1.5 13H6.5L5 9zm4-5h6v2H9V4z"/>
-  <path d="M9 11v9M12 11v9M15 11v9" stroke="currentColor" stroke-width="1" fill="none"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Trash can lid -->
+  <rect x="18" y="30" width="64" height="6" rx="3" fill="currentColor"/>
+  <!-- Trash can handle -->
+  <path d="M38 30 L38 25 Q38 20 43 20 L57 20 Q62 20 62 25 L62 30" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Trash can body (tapered) -->
+  <path d="M24 39 L29 76 Q29 82 34 82 L66 82 Q71 82 71 76 L76 39 Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Photo icon (tilted, centered in can) -->
+  <g transform="rotate(-12 50 58)">
+    <rect x="36" y="46" width="28" height="22" rx="2" fill="none" stroke="currentColor" stroke-width="3"/>
+    <!-- Mountain -->
+    <polyline points="39,64 46,54 50,59 53,55 61,64" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <!-- Sun -->
+    <circle cx="55" cy="51" r="3" fill="currentColor"/>
+  </g>
 </svg>
