@@ -59,7 +59,7 @@ labels: testing
 
 **期待結果**:
 - [ ] 削除したファイル名が表示される
-- [ ] カラム: Preview, Filename, Original Location, Size, Deleted By, Date Deleted, References
+- [ ] カラム: Preview, Filename, Size, Deleted By, Date Deleted, References
 - [ ] Deleted By にログインユーザー名が表示される
 - [ ] Date Deleted に削除日時が表示される
 - [ ] **Restore** と **Delete** ボタンが表示される
