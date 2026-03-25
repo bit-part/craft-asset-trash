@@ -9,10 +9,12 @@ use craft\base\Plugin;
 use craft\elements\Asset;
 use craft\events\DeleteElementEvent;
 use craft\events\RegisterUrlRulesEvent;
+use craft\events\RegisterCpNavItemsEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\services\Elements;
 use craft\services\Gc;
 use craft\services\UserPermissions;
+use craft\web\twig\variables\Cp;
 use craft\web\UrlManager;
 use yii\base\Event;
 
@@ -103,6 +105,31 @@ class AssetTrash extends Plugin
             function (RegisterUrlRulesEvent $event) {
                 $event->rules['asset-trash'] = 'asset-trash/trash/index';
                 $event->rules['asset-trash/detail'] = 'asset-trash/trash/detail';
+            }
+        );
+
+        // Move Asset Trash nav item right after Assets
+        Event::on(
+            Cp::class,
+            Cp::EVENT_REGISTER_CP_NAV_ITEMS,
+            function (RegisterCpNavItemsEvent $event) {
+                $trashIndex = null;
+                $assetsIndex = null;
+
+                foreach ($event->navItems as $i => $item) {
+                    if (($item['url'] ?? '') === 'asset-trash') {
+                        $trashIndex = $i;
+                    }
+                    if (($item['url'] ?? '') === 'assets') {
+                        $assetsIndex = $i;
+                    }
+                }
+
+                if ($trashIndex !== null && $assetsIndex !== null && $trashIndex !== $assetsIndex + 1) {
+                    $trashItem = array_splice($event->navItems, $trashIndex, 1)[0];
+                    $newAssetsIndex = array_search('assets', array_column($event->navItems, 'url'));
+                    array_splice($event->navItems, $newAssetsIndex + 1, 0, [$trashItem]);
+                }
             }
         );
 
