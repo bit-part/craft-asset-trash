@@ -14,6 +14,7 @@ use craft\services\Elements;
 use craft\services\Gc;
 use craft\services\UserPermissions;
 use craft\web\UrlManager;
+use craft\web\View;
 use yii\base\Event;
 
 /**
@@ -27,7 +28,7 @@ use yii\base\Event;
 class AssetTrash extends Plugin
 {
     public string $schemaVersion = '1.0.0';
-    public bool $hasCpSection = true;
+    public bool $hasCpSection = false;
     public bool $hasCpSettings = true;
 
     public static function config(): array
@@ -44,19 +45,7 @@ class AssetTrash extends Plugin
         parent::init();
 
         $this->registerEventHandlers();
-    }
-
-    public function getCpNavItem(): ?array
-    {
-        $item = parent::getCpNavItem();
-
-        if ($item === null) {
-            return null;
-        }
-
-        $item['label'] = Craft::t('asset-trash', 'Asset Trash');
-
-        return $item;
+        $this->registerAssetSidebarLink();
     }
 
     protected function createSettingsModel(): Settings
@@ -69,6 +58,38 @@ class AssetTrash extends Plugin
         return Craft::$app->getView()->renderTemplate('asset-trash/_settings', [
             'settings' => $this->getSettings(),
         ]);
+    }
+
+    private function registerAssetSidebarLink(): void
+    {
+        $request = Craft::$app->getRequest();
+        if ($request->getIsConsoleRequest() || !$request->getIsCpRequest() || $request->getIsAjax()) {
+            return;
+        }
+
+        $label = json_encode(Craft::t('asset-trash', 'Asset Trash'));
+
+        Craft::$app->getView()->registerJs(<<<JS
+(function() {
+    var el = document.querySelector('.elements[data-type="craft\\\\elements\\\\Asset"]');
+    if (!el) return;
+    var sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+    var nav = sidebar.querySelector('nav');
+    if (!nav) return;
+    var ul = document.createElement('ul');
+    ul.style.marginTop = '12px';
+    ul.style.borderTop = '1px solid var(--gray-200, #e5e7eb)';
+    ul.style.paddingTop = '12px';
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    a.href = Craft.getCpUrl('asset-trash');
+    a.textContent = {$label};
+    li.appendChild(a);
+    ul.appendChild(li);
+    nav.appendChild(ul);
+})();
+JS, View::POS_READY);
     }
 
     private function registerEventHandlers(): void
