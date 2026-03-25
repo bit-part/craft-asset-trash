@@ -46,9 +46,6 @@ class AssetTrash extends Plugin
         $this->registerEventHandlers();
     }
 
-    /**
-     * CP nav item with badge count.
-     */
     public function getCpNavItem(): ?array
     {
         $item = parent::getCpNavItem();
@@ -58,17 +55,6 @@ class AssetTrash extends Plugin
         }
 
         $item['label'] = Craft::t('asset-trash', 'Asset Trash');
-
-        if (Craft::$app->getUser()->checkPermission('assetTrash-viewTrash')) {
-            $count = Craft::$app->getCache()->getOrSet(
-                'assetTrash.badgeCount',
-                fn() => $this->trash->getTotalTrashItems(),
-                60
-            );
-            if ($count > 0) {
-                $item['badgeCount'] = $count;
-            }
-        }
 
         return $item;
     }
