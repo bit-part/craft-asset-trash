@@ -209,6 +209,7 @@ class TrashService extends Component
         $asset->size = $item->size;
         $asset->title = $item->title ?? AssetsHelper::filename2Title($filename);
         $asset->alt = $item->alt;
+        $asset->dateModified = new \DateTime();
         $asset->setScenario(Asset::SCENARIO_INDEX);
 
         if (!Craft::$app->getElements()->saveElement($asset)) {
