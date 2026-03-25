@@ -47,15 +47,11 @@ Die geloeschte Datei bleibt in `.trash/`, bis sie wiederhergestellt oder endguel
 
 Im Control Panel erscheint ein eigener **Asset Trash**-Bereich in der Hauptnavigation. Die Uebersicht zeigt:
 
-- Dateivorschau-Icon
 - Dateiname (Link zur Detailansicht)
-- Urspruenglicher Ordnerpfad
 - Dateigroesse
 - Wer die Datei geloescht hat
 - Loeschdatum
 - Anzahl der Element-Referenzen zum Zeitpunkt der Loeschung
-
-Ein Badge-Zaehler am Navigationspunkt zeigt die Anzahl der Eintraege im Papierkorb.
 
 ### Volume-Filter
 
@@ -66,7 +62,7 @@ Bei mehreren Volumes kann ueber ein Dropdown-Filter nach einem bestimmten Volume
 Durch Klick auf einen Dateinamen werden alle Metadaten angezeigt:
 
 - Dateiname, Art und Dateigroesse
-- Volume-Name und urspruenglicher Ordnerpfad
+- Volume-Name und urspruenglicher Pfad (Volume-Basispfad + Dateiname)
 - Titel und Alt-Text (falls gesetzt)
 - Geloescht-von-Benutzer und Loeschdatum
 - Urspruengliche Asset-Element-ID

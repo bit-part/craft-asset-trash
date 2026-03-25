@@ -47,15 +47,11 @@ The trashed file remains in `.trash/` until you restore or permanently delete it
 
 A dedicated **Asset Trash** section appears in the control panel's primary navigation. The listing shows:
 
-- File preview icon
 - Filename (links to detail view)
-- Original folder path
 - File size
 - Who deleted it
 - When it was deleted
 - Number of element references at the time of deletion
-
-A badge count on the nav item shows how many items are in the trash.
 
 ### Volume Filtering
 
@@ -66,7 +62,7 @@ If you have multiple volumes, a dropdown filter lets you view trash items from a
 Click a filename to see full metadata:
 
 - Filename, kind, and file size
-- Volume name and original folder path
+- Volume name and original path (volume base path + filename)
 - Title and alt text (if set)
 - Deleted-by user and deletion date
 - Original asset element ID
