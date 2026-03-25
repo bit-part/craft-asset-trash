@@ -8,11 +8,11 @@
   <!-- Trash can body (tapered) -->
   <path d="M24 39 L29 76 Q29 82 34 82 L66 82 Q71 82 71 76 L76 39 Z" fill="none" stroke="white" stroke-width="4" stroke-linejoin="round"/>
   <!-- Photo icon (tilted, centered in can) -->
-  <g transform="rotate(-12 50 58)">
-    <rect x="36" y="46" width="28" height="22" rx="2" fill="none" stroke="white" stroke-width="3"/>
+  <g transform="rotate(-12 50 62)">
+    <rect x="36" y="50" width="28" height="22" rx="2" fill="none" stroke="white" stroke-width="3"/>
     <!-- Mountain -->
-    <polyline points="39,64 46,54 50,59 53,55 61,64" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+    <polyline points="39,68 46,58 50,63 53,59 61,68" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round"/>
     <!-- Sun -->
-    <circle cx="55" cy="51" r="3" fill="white"/>
+    <circle cx="55" cy="55" r="3" fill="white"/>
   </g>
 </svg>
