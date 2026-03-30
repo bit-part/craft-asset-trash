@@ -2,7 +2,7 @@
     "name": "bit-part/craft-asset-trash",
     "description": "A Craft CMS plugin that intercepts asset deletion and moves files to a trash directory for later restoration or permanent deletion.",
     "type": "craft-plugin",
-    "license": "MIT",
+    "license": "craft-license",
     "require": {
         "php": "^8.2",
         "craftcms/cms": "^5.0.0"
