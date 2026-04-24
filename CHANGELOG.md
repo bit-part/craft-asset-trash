@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2 - 2026-04-24
+
+### Changed
+- composer.json `license` field updated from `craft-license` to `proprietary` so Packagist accepts the metadata. The actual license terms (LICENSE.md) are unchanged.
+
 ## 1.0.1 - 2026-03-27
 
 ### Fixed
